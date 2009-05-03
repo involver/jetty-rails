@@ -7,6 +7,7 @@ module JettyRails
   require "core-3.1.1"
   require "jsp-api-2.1"
   require "jsp-2.1"
+    
   module Jetty
     include_package "org.mortbay.jetty"
     include_package "org.mortbay.jetty.servlet"
@@ -22,10 +23,15 @@ module JettyRails
   end
 
   require "jruby-rack-0.9.4"
+  
   module Rack
     include_package "org.jruby.rack"
     include_package "org.jruby.rack.rails"
     include_package "org.jruby.rack.merb"
+    
+    module JMS
+      include_package "org.jruby.rack.jms"
+    end
   end
   
 end

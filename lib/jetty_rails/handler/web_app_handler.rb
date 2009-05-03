@@ -33,6 +33,7 @@ module JettyRails
       def self.adapters
         @adapters ||= {
           :rails => JettyRails::Adapters::RailsAdapter,
+          :rails_jms => JettyRails::Adapters::RailsJmsAdapter,
           :merb => JettyRails::Adapters::MerbAdapter
         }
       end
