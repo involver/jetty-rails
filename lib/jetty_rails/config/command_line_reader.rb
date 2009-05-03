@@ -55,11 +55,16 @@ class CommandLineReader
           config[:lib_dir] = arg
     	  when '--config'
     	    config[:config_file] = arg if !arg.nil? && arg != ""
-    	    config.merge!(YAML.load_file(config[:config_file]))
       end
     end
 
     config[:base] = ARGV.shift unless ARGV.empty?
+    
+    if File.exists?(config[:config_file])
+      config.merge!(YAML.load_file(config[:config_file]))
+      puts "Loaded #{config[:config_file]}"
+    end
+    
     config
   end  
   
