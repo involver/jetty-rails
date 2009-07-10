@@ -40,3 +40,4 @@ For more information on jetty-rails, see http://jetty-rails.rubyforge.org
     s.add_dependency(%q<hoe>, [">= 1.8.2"])
   end
 end
+ 
