@@ -1,3 +1,8 @@
+desc 'Generate a .gemspec'
+task :gemspec do
+  system "rake debug_gem | grep -v \"(in \" > `basename \\`pwd\\``.gemspec"
+end
+
 desc 'Release the website and new gem version'
 task :deploy => [:check_version, :website, :release] do
   puts "Remember to create SVN tag:"
