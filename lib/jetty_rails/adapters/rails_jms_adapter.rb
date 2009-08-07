@@ -5,12 +5,12 @@ module JettyRails
     # an additional listener for JMS queues
     class RailsJmsAdapter < RailsAdapter
       
-      # Defaults to using OpenMQ, expects jars in lib_dir/jms_dir at startup
+      # Defaults to expecting OpenMQ jars in lib_dir/jms_dir at startup
       @@defaults = {
-        :jms_dir                  => "jms",
-        :connection_factory_class => "com.sun.messaging.ConnectionFactory",
-        :queue_class              => "com.sun.messaging.Queue",
-        :queue_name               => "rails_queue"
+        :jms_dir    => "jms",
+        :queue_name => "rails_queue",
+        :mq_host    => "localhost",
+        :mq_port    => 7676
       }
       
       def initialize(config)
@@ -24,9 +24,9 @@ module JettyRails
       
       def queue_manager_factory
         factory = jndiless_default_queue_manager_factory_class()
-        factory.connection_factory_class = config[:connection_factory_class]
-        factory.queue_class              = config[:queue_class]
-        factory.queue_name               = config[:queue_name]
+        factory.queue_name = config[:queue_name]
+        factory.mq_host    = config[:mq_host]
+        factory.mq_port    = config[:mq_port]
         factory.new
       end
       
@@ -47,9 +47,7 @@ module JettyRails
       # which produces a JNDI-less Rack::JMS::DefaultQueueManager
       def jndiless_default_queue_manager_factory_class
         factory_class = Class.new
-        factory_class.send :cattr_accessor, :connection_factory_class, 
-                                            :queue_class, 
-                                            :queue_name
+        factory_class.send :cattr_accessor, :queue_name, :mq_host, :mq_port
         
         # Implement Rack::JMS::QueueManagerFactory Interface
         factory_class.send :include, Rack::JMS::QueueManagerFactory
@@ -61,9 +59,7 @@ module JettyRails
             manager_class.send :field_accessor, :context, 
                                                 :connectionFactory
             
-            manager_class.send :attr_accessor, :connection_factory_class, 
-                                               :queue_class, 
-                                               :queue_name
+            manager_class.send :attr_accessor, :queue_name, :mq_host, :mq_port
             
             # Overrides JNDI parts of DefaultQueueManager
             manager_class.module_eval do
@@ -72,8 +68,10 @@ module JettyRails
               def init(context)
                 self.context = context
                 unless self.connectionFactory
-                  import self.connection_factory_class
-                  factory = eval(self.connection_factory_class).new
+                  import "com.sun.messaging.ConnectionFactory"
+                  factory = com.sun.messaging.ConnectionFactory.new
+                  config  = com.sun.messaging.ConnectionConfiguration
+                  factory.setProperty(config.imqAddressList, "mq://" + self.mq_host + ":" + self.mq_port.to_s)
                   self.connectionFactory = factory
                 end
               end
@@ -81,8 +79,7 @@ module JettyRails
               # Overrides in order to perform lookup of queue w/o JNDI
               def lookup(name)
                 if name == self.queue_name
-                  @jndiless_queue ||=
-                    eval(self.queue_class).new(self.queue_name)
+                  @jndiless_queue ||= com.sun.messaging.Queue.new(self.queue_name)
                 else
                   super(name)
                 end
@@ -91,9 +88,9 @@ module JettyRails
             end
             
             returning manager_class.new do |m|
-              m.connection_factory_class = self.class.connection_factory_class
-              m.queue_class              = self.class.queue_class
-              m.queue_name               = self.class.queue_name
+              m.queue_name = self.class.queue_name
+              m.mq_host    = self.class.mq_host
+              m.mq_port    = self.class.mq_port
             end
           end
         EOS
