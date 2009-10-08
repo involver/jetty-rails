@@ -32,6 +32,9 @@ module JettyRails
       connector = Jetty::SelectChannelConnector.new
       connector.set_acceptors(config[:acceptor_size])
       connector.port = config[:port]
+      if config[:stats_on]
+        connector.stats_on = true
+      end
       @server.add_connector(connector)
 
       if config[:apps].nil?
