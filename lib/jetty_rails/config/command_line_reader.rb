@@ -10,7 +10,8 @@ class CommandLineReader
         :base => Dir.pwd,
         :port => 3000,
         :config_file => "#{File.join(Dir.pwd, 'config', 'jetty_rails.yml')}",
-        :adapter => :rails
+        :adapter => :rails,
+        :environment => "development"
       },
       :merb => {
         :base => Dir.pwd,
@@ -61,7 +62,8 @@ class CommandLineReader
     config[:base] = ARGV.shift unless ARGV.empty?
     
     if File.exists?(config[:config_file])
-      config.merge!(YAML.load_file(config[:config_file]))
+      config_file = YAML.load_file(config[:config_file])
+      config.merge!(config_file[config[:environment]] || config_file) # check for env scope
       puts "Loaded #{config[:config_file]}"
     end
     
