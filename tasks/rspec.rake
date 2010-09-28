@@ -1,4 +1,10 @@
 begin
+  require 'spec'
+rescue LoadError
+  require 'rubygems' unless ENV['NO_RUBYGEMS']
+  require 'spec'
+end
+begin
   require 'spec/rake/spectask'
 rescue LoadError
   puts <<-EOS
