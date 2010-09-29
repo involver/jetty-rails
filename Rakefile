@@ -1,5 +1,5 @@
 require 'rubygems' unless ENV['NO_RUBYGEMS']
-%w[rake rake/clean fileutils newgem rubigen].each { |f| require f }
+%w[rake rake/clean fileutils newgem rubigen hoe].each { |f| require f }
 require File.dirname(__FILE__) + '/lib/jetty_rails'
 
 # Generate all the Rake tasks
@@ -23,8 +23,5 @@ $hoe = Hoe.new('jetty-rails', JettyRails::VERSION) do |p|
   p.remote_rdoc_dir = File.join(path.gsub(/^#{p.rubyforge_name}\/?/,''), 'rdoc')
   p.rsync_args = '-av --delete --ignore-errors'
 end
-
-require 'newgem/tasks' # load /tasks/*.rake
-Dir['tasks/**/*.rake'].each { |t| load t }
 
 # task :default => :spec
