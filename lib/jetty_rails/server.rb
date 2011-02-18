@@ -16,7 +16,8 @@ module JettyRails
       :jruby_max_runtimes => 5,
       :thread_pool_max => 20,
       :thread_pool_min => 1,
-      :acceptor_size => 5
+      :acceptor_size => 5,
+      :header_size => (24 * 1024)
     }
   
     def initialize(config = {})
@@ -30,6 +31,7 @@ module JettyRails
       @server.set_thread_pool(thread_pool)
     
       connector = Jetty::SelectChannelConnector.new
+      connector.set_header_buffer_size(config[:header_size])
       connector.set_acceptors(config[:acceptor_size])
       connector.port = config[:port]
       if config[:stats_on]

@@ -2,6 +2,10 @@ require File.dirname(__FILE__) + '/spec_helper.rb'
 
 describe "binary executable with no command line arguments" do
   
+  before do
+    ARGV.clear
+  end
+  
   it "should set adapter to rails" do
     runner = mock("runner", :null_object => true)
     current_dir = Dir.pwd
@@ -33,10 +37,11 @@ describe "binary executable with no command line arguments" do
     load File.dirname(__FILE__) + '/../bin/jetty_rails'
   end
   
-  it "should not set the environment by default" do
+  it "should set the environment to development by default" do
     runner = mock("runner", :null_object => true)
     JettyRails::Runner.should_receive(:new) do |config|
-      config.should_not have_key(:environment)
+      config.should have_key(:environment)
+      config[:environment].should == 'development'
       runner
     end
     load File.dirname(__FILE__) + '/../bin/jetty_rails'
@@ -72,6 +77,10 @@ describe "binary executable with no command line arguments" do
 end
 
 describe "binary executable with command line arguments" do
+  
+  before do
+    ARGV.clear
+  end
   
   it "should take the first command line argument as basedir" do
     ARGV[0] = '/any/app/dir'

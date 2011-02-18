@@ -10,13 +10,11 @@ end
 
 desc "Run the specs under spec/"
 Spec::Rake::SpecTask.new do |t|
-  t.spec_opts = ['--options', "spec/spec.opts"]
   t.spec_files = FileList['spec/**/*_spec.rb']
 end
 
 desc "Run the specs under spec/ with rcov enabled"
 Spec::Rake::SpecTask.new 'rcov' do |t|
-  t.spec_opts = ['--options', "spec/spec.opts"]
   t.spec_files = FileList['spec/**/*_spec.rb']
   t.rcov = true
   t.rcov_opts = ['--exclude', 'spec']

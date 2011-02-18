@@ -2,6 +2,10 @@ require File.dirname(__FILE__) + '/spec_helper.rb'
 
 describe "binary executable with no command line arguments" do
   
+  before do
+    ARGV.clear
+  end
+  
   it "should set adapter to merb" do
     runner = mock("runner", :null_object => true)
     current_dir = Dir.pwd
@@ -72,6 +76,10 @@ describe "binary executable with no command line arguments" do
 end
 
 describe "binary executable with command line arguments" do
+  
+  before do
+    ARGV.clear
+  end
   
   it "should take the first command line argument as basedir" do
     ARGV[0] = '/any/app/dir'

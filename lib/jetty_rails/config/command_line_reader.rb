@@ -1,7 +1,6 @@
 require 'getoptlong'
 require 'jetty_rails/config/rdoc_fix'
 
-
 class CommandLineReader
 
   def default_config()
